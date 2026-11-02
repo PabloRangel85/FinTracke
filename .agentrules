@@ -1,0 +1,9 @@
+# FinTrack architecture boundaries
+
+- Keep business rules and validation in `src/modules/**/domain` and `src/modules/**/application`.
+- Application use cases depend on repository interfaces, never on Prisma or Next.js.
+- Put Prisma implementations in `src/modules/**/infrastructure`; route handlers only validate transport input, call use cases, and map errors to HTTP responses.
+- React components call the HTTP API and must not import Prisma, repositories, or domain persistence code.
+- Store monetary values as integer cents. Convert to and from decimal currency only at the API boundary.
+- Use explicit domain errors for invalid transactions and keep category inference in the create-transaction use case.
+- Add unit tests for business rules with in-memory repository fakes.

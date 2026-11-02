@@ -1,7 +1,5 @@
+import { FinanceDashboard } from "@/modules/dashboard/finance-dashboard";
+
 export default function Home() {
-  return (
-    <main>
-      <div>Hello world!</div>
-    </main>
-  );
+  return <FinanceDashboard />;
 }

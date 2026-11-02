@@ -1,34 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FinTrack
 
-## Getting Started
+Gerenciador pessoal de receitas e despesas com categorização automática, extrato e saldo consolidado.
 
-First, run the development server:
+## Executar localmente
+
+Requisitos: Node.js 24+ e npm.
 
 ```bash
+npm install
+cp -n .env.example .env
+npm run db:migrate -- --name init
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A aplicação estará em `http://localhost:3000`. O SQLite local fica em `prisma/dev.db`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API
 
-## Learn More
+- `GET /api/categories`: lista as categorias disponíveis.
+- `GET /api/transactions`: lista transações; aceita `search` e `type=INFLOW|OUTFLOW`.
+- `POST /api/transactions`: cria transação com `description`, `amount` (decimal em reais), `type`, `date` (`YYYY-MM-DD`) e `categoryId` opcional.
+- `GET /api/transactions/summary`: retorna `inflow`, `outflow` e `balance`, agregados pelo banco.
 
-To learn more about Next.js, take a look at the following resources:
+Exemplo de criação:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```json
+{
+  "description": "Mercado da semana",
+  "amount": "245,90",
+  "type": "OUTFLOW",
+  "date": "2026-11-02"
+}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Os valores são persistidos como centavos inteiros. Categorias são uma entidade relacional, e uma categoria incompatível com o tipo da transação é rejeitada. O caso de uso sugere categorias por palavras-chave na descrição e permite selecionar outra categoria válida do mesmo tipo.
 
-## Deploy on Vercel
+## Verificações
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm test
+npm run lint
+npm run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+As fronteiras entre domínio, casos de uso, persistência e interface estão descritas em `.agentrules`.
